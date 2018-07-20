@@ -31,6 +31,7 @@ namespace FtpHelper
                     if (site != null)
                     {
                         site.Stop();
+                        System.Threading.Thread.Sleep(300000);
                         if (site.State == ObjectState.Stopped)
                         {
                             foreach (string file in files)
@@ -74,10 +75,23 @@ namespace FtpHelper
             {
                 Directory.CreateDirectory(destinationPath);
             }
-            if (File.Exists(fullDestinationPath))
-                File.Delete(fullDestinationPath);
-            File.Move(filePathMove, fullDestinationPath);
+         
+            if (File.Exists(fullDestinationPath)) { 
+                if (fileToMove.Extension.Equals(".dll"))
+                {
+                     File.Move(fullDestinationPath, destinationPath +  "\\test" + fileToMove.Name);
+                   
+                }
+                else
+                {
+                    File.Delete(fullDestinationPath);
+                }
+                File.Move(filePathMove, fullDestinationPath);
+                if(File.Exists(destinationPath + "\\test" + fileToMove.Name))
+                    File.Delete(destinationPath + "\\test" + fileToMove.Name);
+            }
         }
+    
         private static void WaitForFinishWrite(string sourcePath, string destinationPath)
         {
             while (true)
