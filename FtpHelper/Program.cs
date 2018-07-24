@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -31,9 +32,17 @@ namespace FtpHelper
                     if (site != null)
                     {
                         site.Stop();
-                        System.Threading.Thread.Sleep(300000);
                         if (site.State == ObjectState.Stopped)
                         {
+                            IEnumerable<Process> dotnetProcesses = Process.GetProcesses().Where(pr => pr.ProcessName == "dotnet");
+                            if(dotnetProcesses.Count() > 1) {
+                                //This app also uses dotnet, the first one should be the longest running
+                                //if the site was down for any other reason, the dotnet running the site 
+                                //might have been previously killed do not need to kill it again
+                                Process theOneToKill = dotnetProcesses.Where(process => process.StartTime == dotnetProcesses.Min(pr => pr.StartTime)).First() ;
+                                 
+                                theOneToKill.Kill();
+                            }
                             foreach (string file in files)
                             {
                                 OnReceiveFiles(file, path);
@@ -77,18 +86,18 @@ namespace FtpHelper
             }
          
             if (File.Exists(fullDestinationPath)) { 
-                if (fileToMove.Extension.Equals(".dll"))
-                {
-                     File.Move(fullDestinationPath, destinationPath +  "\\test" + fileToMove.Name);
+                //if (fileToMove.Extension.Equals(".dll"))
+                //{
+                //     File.Move(fullDestinationPath, destinationPath +  "\\test" + fileToMove.Name);
                    
-                }
-                else
-                {
+                //}
+                //else
+                //{
                     File.Delete(fullDestinationPath);
-                }
+                //}
                 File.Move(filePathMove, fullDestinationPath);
-                if(File.Exists(destinationPath + "\\test" + fileToMove.Name))
-                    File.Delete(destinationPath + "\\test" + fileToMove.Name);
+                //if(File.Exists(destinationPath + "\\test" + fileToMove.Name))
+                //    File.Delete(destinationPath + "\\test" + fileToMove.Name);
             }
         }
     
