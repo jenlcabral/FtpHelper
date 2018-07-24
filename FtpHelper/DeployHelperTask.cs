@@ -14,7 +14,6 @@ namespace FtpHelper
     {
         private readonly SiteSettings settings;
         IServiceContext context;
-
         public DeployHelperTask(IOptions<SiteSettings> options, IServiceContext context)
         {
             settings = options.Value;
@@ -24,27 +23,30 @@ namespace FtpHelper
         public bool Execute()
         {
             string path = settings.FtpFolder;
-            if (Directory.EnumerateFileSystemEntries(path).Any())
+            string mask = "filename.txt";
+            if (Directory.GetFiles(path,mask,SearchOption.AllDirectories).Any())
             {
                 IEnumerable<string> files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
                 if (files.Count() > 0)
                 {
                     //turn off IIS - transfer files to iis location, turn IIS back on after transfer is done
-                    context.Logger.LogInformation("There are files to transfer");
+                    context.Logger.LogInformation("There are files to transfer in folder: {a}", path);
                     ServerManager server = new ServerManager();
                     Site site = server.Sites.FirstOrDefault(s => s.Name == settings.WebsiteName);
                     if (site != null)
                     {
-                        context.Logger.LogInformation("turning off IIS");
+                        context.Logger.LogInformation("Stopping IIS for site {a}", site.Name);
                         site.Stop();
                         if (site.State == ObjectState.Stopped)
                         {
                             IEnumerable<Process> dotnetProcesses = Process.GetProcesses().Where(pr => pr.ProcessName == "dotnet");
                             if (dotnetProcesses.Count() > 1)
                             {
-                                //This app also uses dotnet, the first one should be the longest running
+                                //This app also uses dotnet, the website one should be the longest running
                                 //if the site was down for any other reason, the dotnet running the site 
-                                //might have been previously killed do not need to kill it again
+                                //might have been previously killed do not need to kill it again, also
+                                //occasionally taking down the site with site.Stop(), will kill dotnet, 
+                                //occasionally it will not 
                                 Process theOneToKill = dotnetProcesses.Where(process => process.StartTime == dotnetProcesses.Min(pr => pr.StartTime)).First();
                                 theOneToKill.Kill();
                             }
@@ -59,6 +61,7 @@ namespace FtpHelper
                             Exception exception = new InvalidOperationException("Could not stop website!");
                             context.Logger.LogError("IIS Error", exception);
                         }
+                        context.Logger.LogInformation("Restarting site: {a}", site.Name);
                         site.Start();
                     }
                     else
@@ -72,6 +75,7 @@ namespace FtpHelper
                     context.Logger.LogInformation("Nothing to transfer!");
                 }
             }
+            context.Logger.LogInformation("App completed");
             return true;
         }
 
