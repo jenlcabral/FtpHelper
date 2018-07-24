@@ -14,7 +14,6 @@ namespace FtpHelper
     class DeployHelperManager
     {
         private static IServiceProvider serviceProvider;
-        private readonly FolderSettings settings;
         //private static ILogger logger;
         static void Main(string[] args)
         {
@@ -41,8 +40,8 @@ namespace FtpHelper
 
         public static bool Execute()
         {
-            DeployHelperTask task = serviceProvider.GetService<DeployHelperTask>();
-            return  task.Execute();
+            IMaintenanceTask task = serviceProvider.GetService<IMaintenanceTask>();
+            return task.Execute();
         }
 
         private static IConfiguration GetConfiguration()
@@ -61,7 +60,8 @@ namespace FtpHelper
             IServiceCollection serviceCollection = new ServiceCollection()
             .AddSingleton<ILoggerFactory, LoggerFactory>()
             .AddLogging()
-            .Configure<FolderSettings>(configuration.GetSection("FolderSettings"));
+            .Configure<FolderSettings>(configuration.GetSection("FolderSettings"))
+            .AddTransient<IMaintenanceTask, DeployHelperTask>(); ;
             
             serviceProvider = serviceCollection.BuildServiceProvider();
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

@@ -10,7 +10,7 @@ using Microsoft.Web.Administration;
 
 namespace FtpHelper
 {
-    public class DeployHelperTask
+    public class DeployHelperTask : IMaintenanceTask
     {
         private readonly FolderSettings settings;
         public DeployHelperTask(IOptions<FolderSettings> options)
