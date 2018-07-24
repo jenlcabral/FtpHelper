@@ -6,7 +6,7 @@ using log4net;
 using log4net.Repository;
 using Microsoft.Extensions.Logging;
 
-namespace FtpHelper
+namespace FtpHelper.Logging
 {
     public class Log4NetLogger : ILogger
     {

@@ -8,13 +8,13 @@ using Microsoft.Web.Administration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using FtpHelper.Logging;
 
 namespace FtpHelper
 {
     class DeployHelperManager
     {
         private static IServiceProvider serviceProvider;
-        //private static ILogger logger;
         static void Main(string[] args)
         {
             try
@@ -59,10 +59,11 @@ namespace FtpHelper
         private static void InitializeProviders(IConfiguration configuration)
         {
             IServiceCollection serviceCollection = new ServiceCollection()
-            .AddSingleton<ILoggerFactory, LoggerFactory>()
+            .AddSingleton<ILoggerFactory, LoggerFactory>()            
             .AddLogging()
-            .Configure<FolderSettings>(configuration.GetSection("FolderSettings"))
-            .AddTransient<IMaintenanceTask, DeployHelperTask>(); ;
+            .Configure<SiteSettings>(configuration.GetSection("FolderSettings"))
+            .AddSingleton<IServiceContext, ServiceContext>()
+            .AddTransient<IMaintenanceTask, DeployHelperTask>();
             
             serviceProvider = serviceCollection.BuildServiceProvider();
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

@@ -7,7 +7,7 @@ using log4net;
 using log4net.Core;
 using Microsoft.Extensions.Logging;
 
-namespace FtpHelper
+namespace FtpHelper.Logging
 {
     public static class LoggingExtensions
     {

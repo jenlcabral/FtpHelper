@@ -3,9 +3,10 @@
 
 namespace FtpHelper
 {
-    public class FolderSettings
+    public class SiteSettings
     {
         public string FtpFolder { get; set; }
         public string SiteFolder { get; set; }
+        public string WebsiteName { get; set; }
     }
 }

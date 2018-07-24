@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml;
 using Microsoft.Extensions.Logging;
 
-namespace FtpHelper
+namespace FtpHelper.Logging
 {
     public class Log4NetProvider : ILoggerProvider
     {

@@ -6,36 +6,36 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Web.Administration;
-
+using Microsoft.Extensions.Logging;
 
 namespace FtpHelper
 {
     public class DeployHelperTask : IMaintenanceTask
     {
-        private readonly FolderSettings settings;
-        public DeployHelperTask(IOptions<FolderSettings> options)
+        private readonly SiteSettings settings;
+        IServiceContext context;
+
+        public DeployHelperTask(IOptions<SiteSettings> options, IServiceContext context)
         {
             settings = options.Value;
+            this.context = context;
         }
 
         public bool Execute()
         {
-            //string path = @"C:\Temp\ftptemp";
             string path = settings.FtpFolder;
             if (Directory.EnumerateFileSystemEntries(path).Any())
             {
-
-                //turn off IIS - transfer files to iis location, turn IIS back on after transfer is done
                 IEnumerable<string> files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
                 if (files.Count() > 0)
                 {
-                    Console.WriteLine("there are files to transfer");
-                    Console.WriteLine("turning off IIS");
-                    Console.WriteLine("moving files");
+                    //turn off IIS - transfer files to iis location, turn IIS back on after transfer is done
+                    context.Logger.LogInformation("There are files to transfer");
                     ServerManager server = new ServerManager();
-                    Site site = server.Sites.FirstOrDefault(s => s.Name == "testsite");
+                    Site site = server.Sites.FirstOrDefault(s => s.Name == settings.WebsiteName);
                     if (site != null)
                     {
+                        context.Logger.LogInformation("turning off IIS");
                         site.Stop();
                         if (site.State == ObjectState.Stopped)
                         {
@@ -46,9 +46,9 @@ namespace FtpHelper
                                 //if the site was down for any other reason, the dotnet running the site 
                                 //might have been previously killed do not need to kill it again
                                 Process theOneToKill = dotnetProcesses.Where(process => process.StartTime == dotnetProcesses.Min(pr => pr.StartTime)).First();
-
                                 theOneToKill.Kill();
                             }
+                            context.Logger.LogInformation("moving files");
                             foreach (string file in files)
                             {
                                 OnReceiveFiles(file, path);
@@ -56,29 +56,27 @@ namespace FtpHelper
                         }
                         else
                         {
-                            throw new InvalidOperationException("Could not stop website!");
+                            Exception exception = new InvalidOperationException("Could not stop website!");
+                            context.Logger.LogError("IIS Error", exception);
                         }
                         site.Start();
                     }
                     else
                     {
-                        throw new InvalidOperationException("Could not find website!");
+                        Exception exception = new InvalidOperationException("Could not find website!");
+                        context.Logger.LogError("Site Name Error", exception);
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Nothing to transfer!");
+                    context.Logger.LogInformation("Nothing to transfer!");
                 }
-                
             }
-            Console.ReadLine();
             return true;
         }
 
         public void OnReceiveFiles(string filePathMove, string currentPath)
         {
-            Console.WriteLine("Found file " + filePathMove);
-            //string destinationPath = @"C:\inetpub\wwwroot\TestAspNet";
             string destinationPath = settings.SiteFolder;
             FileInfo fileToMove = new FileInfo(filePathMove);
             string dirToAdd = fileToMove.Directory.ToString().Remove(0, currentPath.Length);
@@ -86,7 +84,7 @@ namespace FtpHelper
             string fullDestinationPath = destinationPath + "\\" + fileToMove.Name;
             WaitForFinishWrite(filePathMove, fullDestinationPath);
 
-            Console.WriteLine("File done writing " + filePathMove + " move to " + fullDestinationPath);
+            context.Logger.LogInformation("File done writing " + filePathMove + " move to " + fullDestinationPath);
             if (!Directory.Exists(destinationPath))
             {
                 Directory.CreateDirectory(destinationPath);
@@ -99,6 +97,7 @@ namespace FtpHelper
             File.Move(filePathMove, fullDestinationPath);
         }
 
+        // Function to wait until a file is done being written before it will attempt to move the file
         private static void WaitForFinishWrite(string sourcePath, string destinationPath)
         {
             while (true)

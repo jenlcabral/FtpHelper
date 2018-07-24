@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtpHelper", "FtpHelper\FtpHelper.csproj", "{721EFA60-EE22-417C-AF64-94C7E53F752C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtpHelper", "FtpHelper\FtpHelper.csproj", "{721EFA60-EE22-417C-AF64-94C7E53F752C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtpHelper.Logging", "FtpHelper.Logging\FtpHelper.Logging.csproj", "{496174E7-0DC7-45A3-B829-C306BDBBAD69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{721EFA60-EE22-417C-AF64-94C7E53F752C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{721EFA60-EE22-417C-AF64-94C7E53F752C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{721EFA60-EE22-417C-AF64-94C7E53F752C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496174E7-0DC7-45A3-B829-C306BDBBAD69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{496174E7-0DC7-45A3-B829-C306BDBBAD69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{496174E7-0DC7-45A3-B829-C306BDBBAD69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{496174E7-0DC7-45A3-B829-C306BDBBAD69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

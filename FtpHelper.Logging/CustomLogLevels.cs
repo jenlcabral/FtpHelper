@@ -9,7 +9,7 @@ using log4net;
 using log4net.Config;
 using log4net.Core;
 
-namespace FtpHelper
+namespace FtpHelper.Logging
 {
     public static class CustomLogLevels
     {
