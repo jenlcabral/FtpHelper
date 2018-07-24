@@ -28,7 +28,8 @@ namespace FtpHelper
             {
                 try
                 {
-                    //logger.LogError(exception, "{0}.{1}:  error starting order confirmation sender. {2}:{3} {4} {5}", nameof(DeployHelperManager), nameof(Main), exception.GetType(), exception.Message, Environment.NewLine, exception.StackTrace);
+                    IServiceContext context = serviceProvider.GetService<IServiceContext>();
+                    context.Logger.LogError(exception, "{0}.{1}:  error starting order confirmation sender. {2}:{3} {4} {5}", nameof(DeployHelperManager), nameof(Main), exception.GetType(), exception.Message, Environment.NewLine, exception.StackTrace);
                 }
                 catch (Exception loggingException)
                 {
@@ -65,7 +66,7 @@ namespace FtpHelper
             
             serviceProvider = serviceCollection.BuildServiceProvider();
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            loggerFactory.AddConsole(configuration.GetSection("Logging"));
+            loggerFactory.AddLog4Net(@".\log4net.config");
             serviceProvider.GetService<ILoggerFactory>().CreateLogger<DeployHelperManager>();
         }
 
