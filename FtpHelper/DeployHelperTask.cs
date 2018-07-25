@@ -23,14 +23,14 @@ namespace FtpHelper
         public bool Execute()
         {
             string path = settings.FtpFolder;
-            string mask = "testfile.txt";
+            string mask = settings.FlagFileName;
             if (Directory.GetFiles(path,mask,SearchOption.AllDirectories).Any())
             {
                 IEnumerable<string> files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
                 if (files.Count() > 0)
                 {
                     //turn off IIS - transfer files to iis location, turn IIS back on after transfer is done
-                    context.Logger.LogInformation("There are files to transfer in folder: {a}", path);
+                    context.Logger.LogInformation("There are files to transfer in folder {a}", path);
                     ServerManager server = new ServerManager();
                     Site site = server.Sites.FirstOrDefault(s => s.Name == settings.WebsiteName);
                     if (site != null)
@@ -50,7 +50,7 @@ namespace FtpHelper
                                 Process theOneToKill = dotnetProcesses.Where(process => process.StartTime == dotnetProcesses.Min(pr => pr.StartTime)).First();
                                 theOneToKill.Kill();
                             }
-                            context.Logger.LogInformation("moving files");
+                            context.Logger.LogInformation("Transferring files from folder {a} to {b}", path, settings.SiteFolder);
                             foreach (string file in files)
                             {
                                 OnReceiveFiles(file, path);
@@ -87,8 +87,6 @@ namespace FtpHelper
             destinationPath = destinationPath + dirToAdd;
             string fullDestinationPath = destinationPath + "\\" + fileToMove.Name;
             WaitForFinishWrite(filePathMove, fullDestinationPath);
-
-            context.Logger.LogInformation("File done writing " + filePathMove + " move to " + fullDestinationPath);
             if (!Directory.Exists(destinationPath))
             {
                 Directory.CreateDirectory(destinationPath);
