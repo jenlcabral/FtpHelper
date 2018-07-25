@@ -23,7 +23,7 @@ namespace FtpHelper
         public bool Execute()
         {
             string path = settings.FtpFolder;
-            string mask = "filename.txt";
+            string mask = "testfile.txt";
             if (Directory.GetFiles(path,mask,SearchOption.AllDirectories).Any())
             {
                 IEnumerable<string> files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
