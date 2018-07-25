@@ -33,14 +33,14 @@ namespace FtpHelper.Logging
         {
             loggerRepository = LogManager.CreateRepository(Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
             // Add custom levels to logger            
-            //CustomLogLevels.Initialize();
-            //loggerRepository.LevelMap.Add(CustomLogLevels.EventLevel);
-            //loggerRepository.LevelMap.Add(CustomLogLevels.SqlLevel);
-            //loggerRepository.LevelMap.Add(CustomLogLevels.PerformanceLevel);
-            //loggerRepository.LevelMap.Add(CustomLogLevels.CommunicationLevel);
-            //loggerRepository.LevelMap.Add(CustomLogLevels.CommandExecutionLevel);
-            //loggerRepository.LevelMap.Add(CustomLogLevels.AuditLevel);
-            //loggerRepository.LevelMap.Add(CustomLogLevels.SupportRequestLevel);
+            CustomLogLevels.Initialize();
+            loggerRepository.LevelMap.Add(CustomLogLevels.EventLevel);
+            loggerRepository.LevelMap.Add(CustomLogLevels.SqlLevel);
+            loggerRepository.LevelMap.Add(CustomLogLevels.PerformanceLevel);
+            loggerRepository.LevelMap.Add(CustomLogLevels.CommunicationLevel);
+            loggerRepository.LevelMap.Add(CustomLogLevels.CommandExecutionLevel);
+            loggerRepository.LevelMap.Add(CustomLogLevels.AuditLevel);
+            loggerRepository.LevelMap.Add(CustomLogLevels.SupportRequestLevel);
         }
 
         public IDisposable BeginScope<TState>(TState state)
