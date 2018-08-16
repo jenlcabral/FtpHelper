@@ -33,7 +33,7 @@ namespace FtpHelper
                     context.Logger.LogInformation("There are files to transfer in folder {a}", path);
                     ServerManager server = new ServerManager();
                     foreach (Site si in server.Sites) { 
-                        context.Logger.LogInformation("Site ", si.Name);
+                        context.Logger.LogInformation("Site {a}", si.Name);
                     }
                     Site site = server.Sites.FirstOrDefault(s => s.Name == settings.WebsiteName);
                     if (site != null)
